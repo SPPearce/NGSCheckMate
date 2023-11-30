@@ -779,7 +779,7 @@ if __name__ == '__main__':
     nodeptherror = ""
 
     help = """
-    NGSCheckMate v1.0
+    NGSCheckMate v1.0.2
     Usage : python ncm_fastq.py -l INPUT_LIST_FILE -pt PT_FILE -O OUTPUT_DIR [options]
             python ncm_fastq.py -l FASTQ_list.txt -pt ./SNP/SNP.pt -O ./ncm_fastq_output -p 4 -f
             python ncm_fastq.py -l FASTQ_list.txt -pt ./SNP/SNP.pt -O ./ncm_fastq_output -p 4 -f -nz

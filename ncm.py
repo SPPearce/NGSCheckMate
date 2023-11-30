@@ -1361,7 +1361,7 @@ if __name__ == '__main__':
     testsamplename = ""
 
     help = """
-    Ensuring Sample Identity v1.0.1
+    Ensuring Sample Identity v1.0.2
     Usage:   NGSCheckmate
 
     Desc.:   Input = the absolute path list of vcf files (samtools mpileup and bcftools)

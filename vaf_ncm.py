@@ -564,7 +564,7 @@ if __name__ == '__main__':
     nodeptherror = ""
 
     help = """
-    NGSCheckMate v1.0
+    NGSCheckMate v1.0.2
     Usage : python vaf_ncm.py -I INPUT_DIR -O OUTPUT_DIR -N PREFIX [options]
             python vaf_ncm.py -I ./ncm_fastq_output -O ./vaf_test -N output -f 
             python vaf_ncm.py -I ./ncm_fastq_output -O ./vaf_test -N output2 -f -nz
