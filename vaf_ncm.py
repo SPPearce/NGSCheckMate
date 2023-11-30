@@ -296,16 +296,17 @@ def classifying():
            os.mkdir(outdir)
 
 
-        output_matrix_f = open(outdir + "/output_corr_matrix.txt","w")
+        output_matrix_f = open(outdir + "/" + out_tag + "_corr_matrix.txt","w")
         output_matrix = dict()
         
         if out_tag!="stdout":
             out_f = open(outdir + "/" + out_tag + "_all.txt","w")
+        	out_matched = open(outdir + "/" + out_tag + "_matched.txt","w")
 
-        for i in range(0, len(samples)):
-            output_matrix[temp[i][0]] = dict()
-            for j in range(0,len(samples)):
-                output_matrix[temp[i][0]][temp[j][0]] = 0
+        for i in range(0, len(keyList)):
+            output_matrix[keyList[i]] = dict()
+            for j in range(0,len(keyList)):
+                output_matrix[keyList[i]][keyList[j]] = 0
 
         if training_flag == 1:
             #make training set
@@ -340,10 +341,12 @@ def classifying():
                 result = classifyNV(samples[i],p0V,p0S, p1V, p1S)
                 if result[1] ==1:
                     output_matrix[temp[i][0].strip()][temp[i][1].strip()] = samples[i]
+                    output_matrix[temp[i][1].strip()][temp[i][0].strip()] = samples[i]
                     if out_tag=="stdout":
                         print str(temp[i][0][:-4]) + '\tmatched\t',str(temp[i][1][:-4]),'\t', round(samples[i],4),'\t',round(depth,2)
                     else :
                         out_f.write(str(temp[i][0][:-4]) + '\tmatched\t' + str(temp[i][1][:-4])  + '\t'+  str(round(samples[i],4)) + '\t' + str(round(depth,2)) + '\n')
+                        out_matched.write(str(temp[i][0][:-4]) + '\tmatched\t' + str(temp[i][1][:-4])  + '\t'+  str(round(samples[i],4)) + '\t' + str(round(depth,2)) + '\n')
                 else:
                     if out_tag=="stdout":
                         print str(temp[i][0][:-4]) + '\tunmatched\t',str(temp[i][1][:-4]),'\t', round(samples[i],4),'\t',round(depth,2)
@@ -369,25 +372,32 @@ def classifying():
         output_matrix_f.close()         
         if out_tag!="stdout":
             out_f.close()   
-
-
+        	out_matched.close()
 
 def generate_R_scripts():
     r_file = open(outdir + "/r_script.r","w")
-    cmd = "output_corr_matrix <- read.delim(\"" + outdir +  "/output_corr_matrix.txt\")\n"
-    cmd = cmd + "data = output_corr_matrix\n"
-    cmd = cmd + "d3 <- as.dist((1 - data[,-1]))\n"
-    cmd = cmd + "clust3 <- hclust(d3, method = \"average\")\n"
-    cmd = cmd + "pdf(\"" +outdir+ "/" + pdf_tag + ".pdf\", width=10, height=7)\n"
-    cmd = cmd + "op = par(bg = \"gray85\")\n"
-    cmd = cmd + "par(plt=c(0.05, 0.95, 0.5, 0.9))\n"
-    cmd = cmd + "plot(clust3, lwd = 2, lty = 1,cex=0.8, xlab=\"Samples\", sub = \"\",  ylab=\"Distance (1-Pearson correlation)\",hang = -1, axes = FALSE)\n"
-    cmd = cmd + "axis(side = 2, at = seq(0, 1, 0.2), labels = FALSE, lwd = 2)\n"
-    cmd = cmd + "mtext(seq(0, 1, 0.2), side = 2, at = seq(0, 1, 0.2), line = 1,   las = 2)\n"
-    cmd = cmd + "dev.off()\n"
-    r_file.write(cmd)
-    r_file.close()
-
+    if len(feature_list)==0:
+       r_file.close()
+    else :
+       cmd = "output_corr_matrix <- read.delim(\"" + outdir +  "/" + out_tag + "_output_corr_matrix.txt\")\n"
+       cmd = cmd + "data = output_corr_matrix\n"
+       cmd = cmd + "d3 <- as.dist((1 - data[,-1]))\n"
+       cmd = cmd + "clust3 <- hclust(d3, method = \"average\")\n"
+       if len(feature_list) < 5:
+           cmd = cmd + "pdf(\"" +outdir+ "/" + pdf_tag + ".pdf\", width=10, height=7)\n"
+       else:
+           cmd = cmd + "pdf(\"" +outdir+ "/" + pdf_tag + ".pdf\", width="+str(math.log10(7*len(feature_list))*10) +", height=7)\n"
+       cmd = cmd + "op = par(bg = \"white\")\n"
+       cmd = cmd + "par(plt=c(0.05, 0.95, 0.25, 0.9))\n"
+       if len(feature_list) < 3:
+           cmd = cmd + "plot(as.dendrogram(clust3), lwd = 2, lty = 1,cex=0.8, xlab=\"Samples\", sub = \"\",  ylab=\"Distance (1-Pearson correlation)\", axes = FALSE)\n"
+       else:
+           cmd = cmd + "plot(clust3, lwd = 2, lty = 1,cex=0.8, xlab=\"Samples\", sub = \"\",  ylab=\"Distance (1-Pearson correlation)\",hang = -1, axes = FALSE)\n"
+       cmd = cmd + "axis(side = 2, at = seq(0, 1, 0.2), labels = FALSE, lwd = 2)\n"
+       cmd = cmd + "mtext(seq(0, 1, 0.2), side = 2, at = seq(0, 1, 0.2), line = 1,   las = 2)\n"
+       cmd = cmd + "dev.off()\n"
+       r_file.write(cmd)
+       r_file.close()
 
 def run_R_scripts():
     command = "R CMD BATCH " + outdir + "/r_script.r"

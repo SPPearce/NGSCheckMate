@@ -911,7 +911,7 @@ def classifying():
         training_flag =0
     ####0715 Append
 
-        output_matrix_f = open(outdir + "/" + out_tag + "_output_corr_matrix.txt","w")
+        output_matrix_f = open(outdir + "/" + out_tag + "_corr_matrix.txt","w")
         output_matrix = dict()
         
         if out_tag!="stdout":
@@ -973,11 +973,6 @@ def classifying():
             else:
                 output_matrix_f.write("\t" + key)
         output_matrix_f.write("\n")
-
-#        for key in output_matrix.keys():
-#            for otherkey in output_matrix[key].keys():
-#                if output_matrix[key][otherkey] != 0:
-#                    output_matrix[otherkey][key] = output_matrix[key][otherkey] 
 
         for key in output_matrix.keys():
             if key.find(".vcf") != -1:
